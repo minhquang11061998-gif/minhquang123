@@ -1,0 +1,1693 @@
+# PROMPT TỔNG THỂ: XÂY DỰNG PHẦN MỀM RUNG CHUÔNG VÀNG BẰNG C# WINDOWS FORMS
+
+## I. VAI TRÒ VÀ MỤC TIÊU DỰ ÁN
+
+Bạn là chuyên gia phân tích thiết kế hệ thống, kiến trúc sư phần mềm và lập trình viên C#/.NET chuyên nghiệp, có kinh nghiệm xây dựng ứng dụng Windows Forms, cơ sở dữ liệu Microsoft Access, xử lý Excel và thiết kế phần mềm trình chiếu gameshow.
+
+Tôi muốn xây dựng một phần mềm hoàn chỉnh có tên:
+
+**PHẦN MỀM RUNG CHUÔNG VÀNG**
+
+Phần mềm sử dụng để tổ chức, quản lý, điều hành và trình chiếu các chương trình thi Rung Chuông Vàng tại trường học, cơ quan và các đơn vị tổ chức sự kiện.
+
+Phần mềm phải có khả năng vận hành thực tế, giao diện đẹp, chuyên nghiệp, dễ sử dụng, hỗ trợ tiếng Việt và hoạt động độc lập trên máy tính Windows.
+
+### 1. Mục tiêu chính
+
+Xây dựng phần mềm có các nhóm chức năng:
+
+1. Quản lý ngân hàng câu hỏi.
+2. Thêm, sửa, xóa câu hỏi.
+3. Quản lý câu hỏi theo lớp, môn học, chủ đề và mức độ khó.
+4. Nhập câu hỏi từ Excel.
+5. Lưu trữ dữ liệu bằng Microsoft Access.
+6. Quản lý danh sách thí sinh.
+7. Quản lý đội thi và thành viên các đội.
+8. Tạo chương trình thi.
+9. Tự động trộn câu hỏi ngẫu nhiên.
+10. Tổ chức thi Rung Chuông Vàng truyền thống, trả lời sai bị loại.
+11. Quản lý thi cá nhân và thi theo đội/lớp.
+12. Điều khiển chương trình trực tiếp.
+13. Tính toán, thống kê kết quả thi.
+14. Hỗ trợ cứu trợ và khôi phục thí sinh.
+15. Trình chiếu bằng hai màn hình độc lập.
+16. Vinh danh người chiến thắng bằng hình ảnh và thông tin cá nhân hoặc tập thể.
+17. Xuất báo cáo và kết quả ra Excel.
+18. Sao lưu và phục hồi dữ liệu.
+
+Mục tiêu cuối cùng là tạo ra một phần mềm gameshow Rung Chuông Vàng có thể sử dụng trong các chương trình thực tế, không phải sản phẩm demo hoặc giao diện minh họa.
+
+---
+
+# II. CÔNG NGHỆ SỬ DỤNG
+
+Bắt buộc sử dụng các công nghệ sau:
+
+| Thành phần | Công nghệ |
+|---|---|
+| Ngôn ngữ | C# |
+| Giao diện | Windows Forms |
+| Framework | .NET 8.0 Windows |
+| Cơ sở dữ liệu | Microsoft Access (.accdb) |
+| Kết nối dữ liệu | OleDb |
+| Nhập/xuất Excel | ClosedXML hoặc EPPlus |
+| Xử lý hình ảnh | System.Drawing |
+| Trình chiếu | Windows Forms |
+| Quản lý hai màn hình | Screen.AllScreens |
+| Đồng hồ | Stopwatch và Timer |
+| Lưu trữ ảnh | Thư mục riêng trên máy tính |
+
+Yêu cầu:
+- Chạy trên Windows 10 và Windows 11.
+- Không sử dụng SQL Server.
+- Không sử dụng MySQL.
+- Không sử dụng Firebase.
+- Không xây dựng thành ứng dụng web.
+- Không sử dụng WPF hoặc MAUI thay cho WinForms.
+- Không yêu cầu kết nối Internet khi vận hành các chức năng cơ bản.
+- Hỗ trợ tiếng Việt Unicode.
+- Có thể đóng gói thành file cài đặt hoặc ứng dụng chạy độc lập.
+
+Lưu ý kỹ thuật:
+- Kiểm tra khả năng tương thích giữa phiên bản .NET, kiến trúc x86/x64 và Microsoft Access Database Engine.
+- Sử dụng OleDb với truy vấn có tham số.
+- Chú ý thứ tự tham số khi sử dụng OleDb.
+- Thiết kế cơ chế khởi tạo cơ sở dữ liệu nếu file Access chưa tồn tại.
+- Không lưu ảnh trực tiếp vào trường OLE Object nếu không cần thiết. Ưu tiên lưu ảnh trong thư mục riêng và lưu đường dẫn tương đối trong Access.
+
+---
+
+# III. THIẾT KẾ TỔNG THỂ GIAO DIỆN
+
+Thiết kế giao diện theo phong cách phần mềm quản trị kết hợp gameshow truyền hình.
+
+## 1. Giao diện quản trị chính
+
+Gồm các khu vực:
+
+**Thanh menu bên trái:**
+- Dashboard.
+- Quản lý câu hỏi.
+- Quản lý lớp học.
+- Quản lý môn học.
+- Quản lý thí sinh.
+- Quản lý đội thi.
+- Quản lý chương trình.
+- Tạo bộ câu hỏi thi.
+- Điều khiển trình chiếu.
+- Kết quả thi.
+- Vinh danh.
+- Báo cáo.
+- Cài đặt.
+
+**Khu vực nội dung chính:**
+- Hiển thị chức năng đang sử dụng.
+- Bảng dữ liệu.
+- Các nút thêm, sửa, xóa, tìm kiếm, nhập Excel và xuất Excel.
+- Thông báo trạng thái.
+- Thống kê tổng quan.
+
+## 2. Phong cách thiết kế
+
+- Giao diện hiện đại, chuyên nghiệp.
+- Tông màu xanh dương, vàng kim, trắng.
+- Các nút chức năng rõ ràng, dễ thao tác.
+- Bố cục gọn gàng.
+- Font chữ dễ đọc.
+- Hỗ trợ độ phân giải màn hình phổ biến.
+- Có thể phóng to, thu nhỏ cửa sổ.
+- Không để các bảng dữ liệu bị tràn hoặc mất nội dung.
+
+Không sử dụng giao diện mặc định đơn điệu của WinForms. Hãy thiết kế lại các Form, Button, Panel, DataGridView, TabControl và các thành phần giao diện để tạo cảm giác như một phần mềm thương mại chuyên nghiệp.
+
+---
+
+# IV. PHÂN HỆ QUẢN LÝ NGÂN HÀNG CÂU HỎI
+
+Đây là phân hệ quan trọng, dùng để lưu trữ toàn bộ câu hỏi phục vụ các chương trình thi.
+
+## 1. Chức năng quản lý câu hỏi
+
+Cho phép:
+
+- Thêm câu hỏi.
+- Chỉnh sửa câu hỏi.
+- Xóa câu hỏi.
+- Xem chi tiết câu hỏi.
+- Tìm kiếm câu hỏi.
+- Lọc câu hỏi.
+- Sao chép câu hỏi.
+- Ngừng sử dụng câu hỏi.
+- Khôi phục câu hỏi đã ngừng sử dụng.
+- Nhập câu hỏi từ Excel.
+- Xuất câu hỏi ra Excel.
+
+Danh sách câu hỏi hiển thị trên DataGridView.
+
+Các cột:
+- STT.
+- Mã câu hỏi.
+- Nội dung câu hỏi.
+- Lớp.
+- Môn học.
+- Chủ đề.
+- Mức độ khó.
+- Loại câu hỏi.
+- Trạng thái.
+
+Có chức năng tìm kiếm nhanh theo nội dung câu hỏi.
+
+## 2. Thông tin câu hỏi
+
+Mỗi câu hỏi gồm:
+
+| Trường | Nội dung |
+|---|---|
+| MaCauHoi | Mã câu hỏi |
+| NoiDung | Nội dung câu hỏi |
+| LopHoc | Lớp áp dụng |
+| MonHoc | Môn học |
+| ChuDe | Chủ đề |
+| MucDo | Mức độ khó |
+| LoaiCauHoi | Loại câu hỏi |
+| GiaiThich | Giải thích đáp án |
+| ThoiGianTraLoi | Thời gian trả lời |
+| DuongDanHinhAnh | Hình ảnh minh họa |
+| TrangThai | Đang sử dụng/ngừng sử dụng |
+
+## 3. Các loại câu hỏi
+
+Phần mềm phải hỗ trợ 3 loại:
+
+**Loại 1: Trắc nghiệm một đáp án đúng**
+
+- Có 2 đến 4 phương án.
+- Chỉ chọn được một đáp án đúng.
+- Khi thêm câu hỏi, quản trị viên chọn đáp án đúng bằng RadioButton.
+
+**Loại 2: Trắc nghiệm nhiều đáp án đúng**
+
+- Có 2 đến 4 phương án hoặc nhiều hơn nếu cấu hình.
+- Cho phép chọn nhiều đáp án đúng bằng CheckBox.
+- Ví dụ đáp án đúng A và C.
+- Hệ thống phải lưu chính xác toàn bộ đáp án đúng.
+
+Quy tắc chấm:
+- Phải chọn đầy đủ đáp án đúng.
+- Không được chọn thừa đáp án sai.
+- Chỉ được xác định đúng khi tập hợp đáp án đã chọn trùng hoàn toàn với tập hợp đáp án chính xác.
+
+**Loại 3: Câu hỏi tự luận/trả lời ngắn**
+
+- Cho phép nhập nội dung đáp án chuẩn.
+- Người điều hành kiểm tra và xác nhận đúng hoặc sai.
+- Có thể ghi chú kết quả chấm.
+
+## 4. Mức độ khó của câu hỏi
+
+Xây dựng 4 cấp độ:
+
+1. Nhận biết.
+2. Thông hiểu.
+3. Vận dụng.
+4. Vận dụng cao.
+
+Cho phép quản trị viên tùy chỉnh tên mức độ và màu sắc hiển thị.
+
+## 5. Quản lý hình ảnh câu hỏi
+
+Cho phép:
+- Chọn hình ảnh từ máy tính.
+- Xem trước hình ảnh.
+- Thay đổi hình ảnh.
+- Xóa hình ảnh.
+- Hỗ trợ JPG, JPEG, PNG, WEBP.
+- Tự động điều chỉnh kích thước khi trình chiếu.
+- Không làm méo ảnh.
+
+Hình ảnh lưu trong thư mục `Data/Images/Questions/`.
+
+---
+
+# V. PHÂN HỆ QUẢN LÝ LỚP HỌC, MÔN HỌC VÀ CHỦ ĐỀ
+
+## 1. Quản lý lớp học
+
+Cho phép:
+- Thêm lớp.
+- Sửa lớp.
+- Xóa lớp.
+- Tìm kiếm lớp.
+- Kích hoạt/ngừng sử dụng lớp.
+
+Ví dụ:
+- Lớp 1 đến lớp 12.
+- Có thể thêm tên lớp cụ thể như 5A, 5B, 6A1, 6A2.
+
+Thông tin lớp:
+- MaLop.
+- TenLop.
+- KhoiLop.
+- TenTruong.
+- GhiChu.
+
+## 2. Quản lý môn học
+
+Cho phép thêm, sửa, xóa môn học.
+
+Ví dụ:
+- Toán.
+- Ngữ văn.
+- Tiếng Anh.
+- Lịch sử.
+- Địa lý.
+- Khoa học.
+- Tin học.
+- Giáo dục công dân.
+- Kiến thức xã hội.
+
+## 3. Quản lý chủ đề
+
+Cho phép phân loại câu hỏi theo từng chủ đề.
+
+Ví dụ:
+- Kiến thức lịch sử.
+- Văn hóa.
+- Khoa học.
+- Môi trường.
+- Kỹ năng sống.
+- Kiến thức xã hội.
+
+Một câu hỏi có thể được phân loại theo lớp, môn học và chủ đề.
+
+Cho phép một câu hỏi áp dụng cho nhiều lớp nếu cần.
+
+---
+
+# VI. PHÂN HỆ NHẬP VÀ XUẤT EXCEL
+
+Xây dựng chức năng nhập ngân hàng câu hỏi từ file Excel.
+
+## 1. Chức năng
+
+- Tải file Excel mẫu.
+- Chọn file Excel.
+- Đọc dữ liệu.
+- Xem trước dữ liệu.
+- Kiểm tra dữ liệu.
+- Nhập dữ liệu.
+- Thông báo kết quả.
+- Xuất danh sách câu hỏi ra Excel.
+
+## 2. Cấu trúc file Excel
+
+Tạo file mẫu có các cột:
+
+1. STT.
+2. Nội dung câu hỏi.
+3. Lớp.
+4. Môn học.
+5. Chủ đề.
+6. Mức độ.
+7. Loại câu hỏi.
+8. Đáp án A.
+9. Đáp án B.
+10. Đáp án C.
+11. Đáp án D.
+12. Đáp án đúng.
+13. Giải thích.
+14. Thời gian trả lời.
+
+Quy tắc:
+- Câu hỏi một đáp án: ghi A hoặc B hoặc C hoặc D.
+- Câu hỏi nhiều đáp án: ghi A,C hoặc B,C,D.
+- Câu hỏi tự luận: nhập đáp án chuẩn.
+- Mức độ phải nằm trong danh sách cấu hình.
+- Loại câu hỏi phải hợp lệ.
+
+## 3. Kiểm tra dữ liệu
+
+Trước khi nhập:
+- Kiểm tra nội dung câu hỏi.
+- Kiểm tra lớp học.
+- Kiểm tra mức độ khó.
+- Kiểm tra loại câu hỏi.
+- Kiểm tra đáp án đúng.
+- Kiểm tra các câu hỏi trùng lặp.
+- Kiểm tra các trường bắt buộc.
+
+Hiển thị lỗi theo từng dòng Excel.
+
+Ví dụ:
+- Dòng 5: Chưa nhập nội dung câu hỏi.
+- Dòng 8: Đáp án đúng không hợp lệ.
+- Dòng 10: Mức độ khó không tồn tại.
+
+Không nhập những dòng lỗi.
+
+Không xóa dữ liệu cũ khi nhập dữ liệu mới.
+
+Có lựa chọn cập nhật câu hỏi đã tồn tại hoặc bỏ qua câu hỏi trùng.
+
+---
+
+# VII. PHÂN HỆ QUẢN LÝ THÍ SINH
+
+## 1. Quản lý thí sinh
+
+Thông tin:
+- Mã thí sinh.
+- Số báo danh.
+- Họ và tên.
+- Lớp.
+- Trường.
+- Giới tính (không bắt buộc).
+- Ghi chú.
+- Đường dẫn hình ảnh (không bắt buộc).
+
+Chức năng:
+- Thêm thí sinh.
+- Sửa thí sinh.
+- Xóa thí sinh.
+- Tìm kiếm.
+- Lọc theo lớp.
+- Nhập Excel.
+- Xuất Excel.
+- Chọn thí sinh tham gia chương trình.
+
+## 2. Quản lý đội thi
+
+Thông tin đội:
+- Mã đội.
+- Tên đội.
+- Lớp.
+- Trường.
+- Đội trưởng.
+- Danh sách thành viên.
+- Hình ảnh đội.
+- Ghi chú.
+
+Chức năng:
+- Tạo đội.
+- Sửa đội.
+- Xóa đội.
+- Thêm thành viên.
+- Xóa thành viên.
+- Chuyển thành viên giữa các đội.
+- Xem danh sách đội.
+- Nhập danh sách đội từ Excel.
+- Xuất danh sách đội ra Excel.
+
+Một thí sinh có thể tham gia những chương trình khác nhau với các đội khác nhau nhưng không được thuộc nhiều đội trong cùng một chương trình thi.
+
+---
+
+# VIII. PHÂN HỆ TẠO VÀ QUẢN LÝ CHƯƠNG TRÌNH THI
+
+Cho phép tạo nhiều chương trình thi độc lập.
+
+Thông tin chương trình:
+- Mã chương trình.
+- Tên chương trình.
+- Ngày tổ chức.
+- Đơn vị tổ chức.
+- Địa điểm.
+- Mô tả.
+- Hình thức thi.
+- Phương thức quản lý thí sinh.
+- Số lượng câu hỏi.
+- Thời gian trả lời.
+- Trạng thái chương trình.
+
+## 1. Hình thức thi
+
+Chỉ sử dụng hình thức:
+
+**RUNG CHUÔNG VÀNG TRUYỀN THỐNG, TRẢ LỜI SAI BỊ LOẠI.**
+
+Nguyên tắc:
+- Tất cả thí sinh hoặc đội cùng trả lời một câu hỏi.
+- Trả lời đúng được tiếp tục.
+- Trả lời sai bị loại.
+- Không trả lời khi hết giờ bị loại.
+- Thí sinh đã bị loại không được tham gia câu hỏi tiếp theo nếu chưa được cứu trợ hoặc khôi phục.
+- Tiếp tục cho đến khi tìm được người chiến thắng hoặc kết thúc bộ câu hỏi.
+
+## 2. Hai phương thức tổ chức
+
+Khi tạo chương trình, cho phép chọn:
+
+**PHƯƠNG THỨC A: THI CÁ NHÂN**
+
+Quản lý từng thí sinh độc lập.
+
+**PHƯƠNG THỨC B: THI THEO ĐỘI/LỚP**
+
+Quản lý các đội thi, mỗi đội gồm nhiều thành viên.
+
+Hai phương thức phải dùng chung bộ máy điều hành và cơ sở dữ liệu, không tạo hai phần mềm riêng.
+
+## 3. Cấu hình cuộc thi
+
+Cho phép:
+- Chọn lớp tham gia.
+- Chọn thí sinh hoặc đội tham gia.
+- Chọn ngân hàng câu hỏi.
+- Chọn môn học.
+- Chọn chủ đề.
+- Chọn mức độ khó.
+- Chọn số lượng câu hỏi.
+- Chọn thời gian trả lời.
+- Chọn quy tắc cứu trợ.
+- Chọn quy tắc xử lý khi hết câu hỏi mà còn nhiều thí sinh.
+
+Có chức năng xem trước danh sách câu hỏi trước khi bắt đầu.
+
+---
+
+# IX. PHÂN HỆ TRỘN CÂU HỎI NGẪU NHIÊN
+
+Xây dựng chức năng lấy câu hỏi ngẫu nhiên từ ngân hàng câu hỏi.
+
+Cho phép hai chế độ:
+
+**Chế độ 1: Chọn thủ công**
+
+Quản trị viên tự chọn từng câu hỏi cho chương trình.
+
+**Chế độ 2: Trộn ngẫu nhiên**
+
+Cho phép cấu hình:
+- Lớp học.
+- Môn học.
+- Chủ đề.
+- Mức độ khó.
+- Số lượng câu hỏi.
+- Tỷ lệ từng mức độ.
+
+Ví dụ:
+- 20% Nhận biết.
+- 30% Thông hiểu.
+- 30% Vận dụng.
+- 20% Vận dụng cao.
+
+Hệ thống tự động lựa chọn câu hỏi theo tỷ lệ.
+
+Yêu cầu:
+- Không lấy câu hỏi ngoài phạm vi lớp đã chọn.
+- Không lấy câu hỏi trùng.
+- Không lấy câu hỏi đã ngừng sử dụng.
+- Không để tỷ lệ phân bổ sai tổng số câu hỏi.
+- Nếu không đủ câu hỏi ở một mức độ, thông báo và cho phép điều chỉnh.
+- Có chức năng trộn lại.
+- Có chức năng lưu bộ câu hỏi.
+- Có chức năng xem trước thứ tự câu hỏi.
+
+Sau khi bắt đầu chương trình, phải cố định bộ câu hỏi và thứ tự để tránh thay đổi ngoài ý muốn.
+
+---
+
+# X. PHÂN HỆ ĐIỀU HÀNH THI RUNG CHUÔNG VÀNG TRUYỀN THỐNG
+
+Đây là bộ máy nghiệp vụ quan trọng nhất của phần mềm.
+
+## 1. Quy tắc hoạt động
+
+Mỗi câu hỏi:
+- Hiển thị đồng thời cho toàn bộ thí sinh hoặc đội.
+- Có đồng hồ đếm ngược.
+- Hết thời gian, MC yêu cầu xác nhận đáp án.
+- Công bố đáp án đúng.
+- Xác nhận kết quả từng thí sinh hoặc đội.
+- Đúng thì tiếp tục.
+- Sai hoặc không trả lời thì bị loại.
+
+Không tự động loại thí sinh trước khi MC xác nhận kết quả.
+
+## 2. Các trạng thái thí sinh
+
+- Chưa tham gia.
+- Đang thi.
+- Trả lời đúng.
+- Bị loại.
+- Được cứu trợ.
+- Được khôi phục.
+- Chiến thắng.
+
+## 3. Các trạng thái đội thi
+
+- Chưa tham gia.
+- Đang thi.
+- Trả lời đúng.
+- Bị loại.
+- Được cứu trợ.
+- Được khôi phục.
+- Chiến thắng.
+
+## 4. Cơ chế xác nhận kết quả
+
+Sau khi công bố đáp án, người điều hành có thể:
+
+- Xác nhận đúng.
+- Xác nhận sai.
+- Xác nhận không trả lời.
+- Đánh dấu chờ xử lý.
+- Xác nhận hàng loạt.
+
+Khi xác nhận đúng:
+- Giữ trạng thái đang thi.
+- Tăng số câu trả lời đúng.
+- Ghi nhận lịch sử.
+
+Khi xác nhận sai:
+- Chuyển trạng thái bị loại.
+- Ghi nhận câu hỏi bị loại.
+- Ghi nhận thời gian bị loại.
+- Lưu lý do loại.
+
+Khi không trả lời:
+- Chuyển trạng thái bị loại.
+- Ghi nhận câu hỏi không trả lời.
+
+Phải có nút hoàn tác để xử lý trường hợp MC thao tác nhầm.
+
+## 5. Quản lý kết quả thi cá nhân
+
+Hiển thị bảng:
+
+| STT | SBD | Họ tên | Lớp | Số câu đúng | Câu bị loại | Trạng thái |
+|---|---|---|---|---|---|---|
+
+Cho phép:
+- Tìm kiếm thí sinh.
+- Lọc thí sinh còn thi.
+- Lọc thí sinh bị loại.
+- Đánh dấu đúng/sai.
+- Loại thủ công.
+- Khôi phục.
+- Xem lịch sử.
+
+## 6. Quản lý kết quả thi theo đội
+
+Hiển thị bảng:
+
+| STT | Tên đội | Lớp | Số thành viên | Số câu đúng | Trạng thái |
+|---|---|---|---|---|---|
+
+Cho phép:
+- Xem danh sách thành viên.
+- Đánh dấu đội đúng/sai.
+- Loại đội.
+- Cứu trợ đội.
+- Khôi phục đội.
+- Xem lịch sử đội.
+
+## 7. Quy tắc trả lời theo đội
+
+Khi tạo chương trình thi theo đội, cho phép lựa chọn:
+
+**Quy tắc 1: Đội trưởng quyết định**
+
+Chỉ đáp án của đội trưởng hoặc người đại diện được dùng làm kết quả chính thức.
+
+**Quy tắc 2: Đội thống nhất đáp án**
+
+Các thành viên thảo luận và đội trưởng nhập đáp án cuối cùng.
+
+**Quy tắc 3: Tất cả thành viên phải trả lời đúng**
+
+Từng thành viên có kết quả riêng. Nếu một thành viên trả lời sai thì đội bị loại theo quy tắc đã cấu hình.
+
+Mặc định sử dụng quy tắc Đội trưởng quyết định.
+
+## 8. Cơ chế cứu trợ
+
+Cho phép:
+- Cứu trợ toàn bộ thí sinh đã bị loại.
+- Cứu trợ một số lượng thí sinh.
+- Cứu trợ một thí sinh cụ thể.
+- Cứu trợ toàn bộ đội bị loại.
+- Khôi phục một đội cụ thể.
+- Cấu hình số lần cứu trợ.
+
+Mọi thao tác phải:
+- Ghi lịch sử.
+- Ghi thời gian.
+- Ghi người thực hiện.
+- Không xóa lịch sử bị loại trước đó.
+- Cập nhật ngay trên màn hình trình chiếu.
+
+Khi cứu trợ đội, hệ thống phải khôi phục trạng thái của đội và các thành viên theo đúng quy tắc chương trình.
+
+## 9. Cơ chế hoàn tác
+
+Có chức năng hoàn tác các thao tác gần nhất:
+
+- Hoàn tác xác nhận sai.
+- Hoàn tác loại thí sinh.
+- Hoàn tác loại đội.
+- Hoàn tác cứu trợ.
+- Hoàn tác khôi phục.
+
+Chỉ cho phép hoàn tác các thao tác phù hợp với trạng thái hiện tại, có xác nhận trước khi thực hiện.
+
+Không được xóa lịch sử. Phải ghi nhận cả thao tác hoàn tác.
+
+## 10. Cơ chế kết thúc chương trình
+
+Khi chỉ còn một thí sinh hoặc một đội:
+- Hiển thị thông báo còn một người hoặc một đội.
+- Cho phép MC xác nhận chiến thắng.
+- Chuyển sang màn hình vinh danh.
+
+Nếu hết câu hỏi mà vẫn còn nhiều thí sinh hoặc nhiều đội:
+- Hiển thị bảng thống kê.
+- Cho phép sử dụng câu hỏi phụ.
+- Cho phép MC quyết định kết thúc.
+- Không tự động chọn người chiến thắng khi chưa có quy tắc phân định.
+
+Nếu có nhiều người cùng trụ lại đến cuối:
+- Xét số câu trả lời đúng.
+- Nếu vẫn bằng nhau, tổ chức câu hỏi phụ.
+- Cho phép MC xác nhận kết quả cuối cùng.
+
+---
+
+# XI. CƠ CHẾ ĐIỂM SỐ VÀ XẾP HẠNG
+
+Vì đây là hình thức Rung Chuông Vàng truyền thống nên không sử dụng điểm cộng dồn làm tiêu chí thắng thua mặc định.
+
+Các chỉ số thống kê gồm:
+- Tổng số câu hỏi tham gia.
+- Tổng số câu trả lời đúng.
+- Số câu trả lời sai.
+- Số câu không trả lời.
+- Câu hỏi bị loại.
+- Thời điểm bị loại.
+- Số lần được cứu trợ.
+- Thời gian duy trì trong cuộc thi.
+- Thứ hạng cuối cùng.
+
+Quy tắc xếp hạng cá nhân:
+1. Thí sinh còn lại cuối cùng xếp hạng cao nhất.
+2. Nếu kết thúc mà còn nhiều thí sinh, xét số câu trả lời đúng.
+3. Nếu bằng nhau, tổ chức câu hỏi phụ.
+4. Các thí sinh bị loại xếp hạng theo số câu trả lời đúng trước khi bị loại và thứ tự loại.
+
+Quy tắc xếp hạng đội:
+1. Đội còn lại cuối cùng xếp hạng cao nhất.
+2. Nếu nhiều đội cùng còn lại, xét số câu trả lời đúng.
+3. Nếu bằng nhau, tổ chức câu hỏi phụ.
+
+Cho phép quản trị viên điều chỉnh kết quả cuối cùng nếu có quyết định chính thức từ ban tổ chức.
+
+Phải ghi nhận lịch sử mọi thay đổi.
+
+---
+
+# XII. PHÂN HỆ ĐIỀU KHIỂN TRÌNH CHIẾU HAI MÀN HÌNH
+
+Đây là chức năng đặc biệt quan trọng.
+
+Phần mềm phải sử dụng hai cửa sổ độc lập:
+
+1. Control Screen: Màn hình điều khiển dành cho MC và ban tổ chức.
+2. Presentation Screen: Màn hình trình chiếu dành cho thí sinh và khán giả.
+
+Hai màn hình sử dụng chung trạng thái chương trình.
+
+## 1. Màn hình điều khiển
+
+Thiết kế thành các khu vực.
+
+### Khu vực A: Xem trước trình chiếu
+
+Hiển thị màn hình nhỏ mô phỏng chính xác nội dung đang hiển thị trên máy chiếu.
+
+Cho phép xem:
+- Màn hình chờ.
+- Nội dung câu hỏi.
+- Đáp án.
+- Đồng hồ.
+- Bảng thống kê.
+- Kết quả.
+- Vinh danh.
+
+### Khu vực B: Thông tin chương trình
+
+Hiển thị:
+- Tên chương trình.
+- Hình thức thi.
+- Số câu hiện tại.
+- Tổng số câu.
+- Số thí sinh ban đầu.
+- Số thí sinh còn lại.
+- Số thí sinh bị loại.
+- Số đội ban đầu.
+- Số đội còn lại.
+- Số đội bị loại.
+
+### Khu vực C: Điều khiển chương trình
+
+Thiết kế các nút lớn:
+
+1. Bắt đầu chương trình.
+2. Hiển thị câu hỏi.
+3. Bắt đầu đếm giờ.
+4. Tạm dừng.
+5. Tiếp tục.
+6. Công bố đáp án.
+7. Xác nhận đúng/sai.
+8. Chuyển câu tiếp theo.
+9. Quay lại câu trước.
+10. Kết thúc câu hỏi.
+11. Hiển thị danh sách còn thi.
+12. Hiển thị danh sách bị loại.
+13. Cứu trợ.
+14. Khôi phục.
+15. Bảng kết quả.
+16. Kết thúc chương trình.
+17. Vinh danh.
+
+### Khu vực D: Quản lý thí sinh
+
+Tùy chế độ thi sẽ hiển thị danh sách cá nhân hoặc đội.
+
+Cho phép xác nhận kết quả hàng loạt.
+
+### Khu vực E: Nhật ký điều hành
+
+Hiển thị lịch sử thao tác:
+- Bắt đầu chương trình.
+- Hiển thị câu hỏi.
+- Bắt đầu đếm giờ.
+- Công bố đáp án.
+- Xác nhận đúng/sai.
+- Loại thí sinh.
+- Cứu trợ.
+- Khôi phục.
+- Kết thúc chương trình.
+
+## 2. Màn hình trình chiếu lớn
+
+Thiết kế riêng theo phong cách gameshow truyền hình.
+
+Yêu cầu:
+- Full Screen.
+- Không hiển thị menu quản trị.
+- Không hiển thị các nút điều khiển.
+- Font chữ lớn.
+- Hình ảnh đẹp.
+- Hiệu ứng chuyển cảnh.
+- Màu sắc nổi bật.
+- Hiển thị tốt trên máy chiếu và TV.
+
+### Các trạng thái trình chiếu
+
+**Trạng thái 1: Màn hình chờ**
+
+Hiển thị:
+- Logo chương trình.
+- Tên RUNG CHUÔNG VÀNG.
+- Tên đơn vị tổ chức.
+- Hình nền sân khấu.
+- Hiệu ứng chuyển động nhẹ.
+
+**Trạng thái 2: Giới thiệu câu hỏi**
+
+Hiển thị:
+- Số câu hỏi.
+- Nội dung câu hỏi.
+- Mức độ khó.
+- Hình ảnh minh họa.
+
+**Trạng thái 3: Hiển thị đáp án**
+
+Hiển thị đầy đủ các lựa chọn A, B, C, D.
+
+**Trạng thái 4: Đếm ngược**
+
+Hiển thị đồng hồ lớn:
+
+15 - 14 - 13 - 12... 3 - 2 - 1 - 0.
+
+Có âm thanh cảnh báo khi còn 5 giây cuối.
+
+**Trạng thái 5: Công bố đáp án đúng**
+
+- Đánh dấu đáp án đúng.
+- Hiển thị giải thích.
+- Hiệu ứng chuyển màu.
+
+**Trạng thái 6: Thống kê thí sinh**
+
+Thi cá nhân:
+- Tổng số thí sinh.
+- Số người còn lại.
+- Số người bị loại.
+
+Thi theo đội:
+- Tổng số đội.
+- Số đội còn lại.
+- Số đội bị loại.
+- Danh sách đội còn thi.
+
+**Trạng thái 7: Màn hình cứu trợ**
+
+Hiển thị số lượng thí sinh hoặc đội được cứu trợ.
+
+**Trạng thái 8: Màn hình chung kết**
+
+Hiển thị danh sách những thí sinh hoặc đội còn lại.
+
+**Trạng thái 9: Màn hình chiến thắng**
+
+Hiển thị người chiến thắng hoặc đội chiến thắng.
+
+---
+
+# XIII. CƠ CHẾ ĐỒNG BỘ HAI MÀN HÌNH
+
+Sử dụng Windows Forms và Screen.AllScreens.
+
+Yêu cầu:
+
+1. Tự động nhận diện màn hình máy tính.
+2. Tự động phát hiện màn hình thứ hai.
+3. Màn hình chính hiển thị Control Screen.
+4. Màn hình phụ hiển thị Presentation Screen.
+5. Cho phép lựa chọn màn hình trình chiếu.
+6. Cho phép chuyển đổi màn hình.
+7. Nếu chỉ có một màn hình, cho phép chạy thử chế độ trình chiếu.
+8. Khi MC thay đổi câu hỏi, màn hình lớn phải cập nhật ngay.
+9. Khi tạm dừng đồng hồ, cả hai màn hình phải đồng bộ.
+10. Khi công bố đáp án, cả hai màn hình phải đồng bộ.
+11. Không được để màn hình trình chiếu bị treo khi màn hình điều khiển thao tác.
+
+Yêu cầu kiến trúc:
+
+- Xây dựng lớp quản lý trạng thái chương trình.
+- Hai Form sử dụng chung đối tượng quản lý trạng thái.
+- Sử dụng Event hoặc cơ chế thông báo thay đổi dữ liệu.
+- Không tạo hai bản sao dữ liệu độc lập.
+- Không truy cập điều khiển của Form khác trực tiếp từ luồng không phải UI.
+- Sử dụng Invoke hoặc BeginInvoke khi cần cập nhật giao diện giữa các luồng.
+
+## Đồng hồ đếm ngược
+
+Không sử dụng cách giảm số giây đơn thuần bằng Timer để tính thời gian thực tế.
+
+Sử dụng Stopwatch hoặc cơ chế dựa trên thời gian thực để bảo đảm đồng hồ chính xác.
+
+Có các nút:
+- Bắt đầu.
+- Tạm dừng.
+- Tiếp tục.
+- Đặt lại.
+
+Khi ứng dụng bị treo giao diện trong thời gian ngắn, đồng hồ phải tiếp tục phản ánh đúng thời gian thực đã trôi qua.
+
+---
+
+# XIV. PHÂN HỆ VINH DANH NGƯỜI CHIẾN THẮNG
+
+Xây dựng phân hệ riêng có tên:
+
+**VINH DANH NGƯỜI CHIẾN THẮNG**
+
+Đây là chức năng quan trọng để trình chiếu hình ảnh và thông tin người chiến thắng sau khi kết thúc cuộc thi.
+
+## 1. Giao diện nhập thông tin
+
+Bổ sung nút VINH DANH NGƯỜI CHIẾN THẮNG trên màn hình điều khiển.
+
+Khi nhấn, mở giao diện nhập:
+
+- Họ và tên.
+- Tên lớp.
+- Tên trường.
+- Số báo danh.
+- Tên đội nếu thi theo đội.
+- Giải thưởng.
+- Thành tích.
+- Số câu trả lời đúng.
+- Số câu đã vượt qua.
+- Hình ảnh người chiến thắng hoặc ảnh tập thể.
+- Ghi chú.
+
+Cho phép nhập thông tin thủ công hoặc lấy dữ liệu tự động từ kết quả thi.
+
+## 2. Quản lý hình ảnh người chiến thắng
+
+Cho phép:
+- Chọn ảnh từ máy tính.
+- Xem trước.
+- Thay đổi ảnh.
+- Xóa ảnh.
+- Cắt ảnh.
+- Điều chỉnh vị trí.
+- Phóng to, thu nhỏ.
+- Hỗ trợ JPG, JPEG, PNG, WEBP.
+- Giữ nguyên tỷ lệ ảnh.
+
+Hỗ trợ:
+- Ảnh chân dung.
+- Ảnh cá nhân toàn thân.
+- Ảnh tập thể.
+- Ảnh đội chiến thắng.
+
+Hình ảnh được lưu trong thư mục:
+
+`Data/Images/Winners/`
+
+Cơ sở dữ liệu chỉ lưu đường dẫn ảnh tương đối.
+
+## 3. Tự động lấy thông tin
+
+Nếu thi cá nhân:
+- Tự động lấy họ tên.
+- Tự động lấy lớp.
+- Tự động lấy trường.
+- Tự động lấy số báo danh.
+- Tự động lấy thành tích.
+
+Nếu thi theo đội:
+- Tự động lấy tên đội.
+- Tự động lấy tên lớp.
+- Tự động lấy trường.
+- Tự động lấy danh sách thành viên.
+- Tự động lấy thành tích của đội.
+
+Cho phép chỉnh sửa thông tin trước khi trình chiếu.
+
+## 4. Màn hình vinh danh
+
+Thiết kế một màn hình riêng trên máy chiếu.
+
+Phong cách:
+- Sang trọng.
+- Hiện đại.
+- Tông màu vàng kim, xanh đậm, đen.
+- Hiệu ứng ánh sáng sân khấu.
+- Hiệu ứng pháo giấy.
+- Hiệu ứng xuất hiện tên.
+- Hiệu ứng chuông vàng.
+- Nhạc chúc mừng.
+
+### Bố cục
+
+Phần trên:
+- Logo chương trình.
+- Dòng chữ VINH DANH NGƯỜI CHIẾN THẮNG.
+
+Phần trung tâm:
+- Hình ảnh người chiến thắng.
+- Họ tên.
+- Tên lớp.
+- Tên trường hoặc đội thi.
+
+Phần dưới:
+- Danh hiệu.
+- Thành tích.
+- Số câu trả lời đúng.
+- Số câu đã vượt qua.
+- Lời chúc mừng.
+
+Ví dụ:
+
+VINH DANH NHÀ VÔ ĐỊCH
+
+NGUYỄN VĂN A
+
+LỚP 5A
+
+TRƯỜNG TIỂU HỌC ABC
+
+NGƯỜI CHIẾN THẮNG RUNG CHUÔNG VÀNG
+
+CHÚC MỪNG BẠN ĐÃ XUẤT SẮC VƯỢT QUA CÁC THỬ THÁCH!
+
+## 5. Vinh danh nhiều giải thưởng
+
+Cho phép quản lý:
+
+- Giải Nhất.
+- Giải Nhì.
+- Giải Ba.
+- Giải Khuyến khích.
+- Giải Người chơi xuất sắc nhất.
+- Giải Đội thi xuất sắc nhất.
+- Giải phụ do ban tổ chức tự tạo.
+
+Cho phép:
+- Thêm giải thưởng.
+- Sửa giải thưởng.
+- Xóa giải thưởng.
+- Chọn người nhận giải.
+- Chọn đội nhận giải.
+- Chọn hình ảnh.
+- Sắp xếp thứ tự.
+- Trình chiếu lần lượt.
+
+Cho phép MC nhập nhiều người chiến thắng trong cùng một chương trình.
+
+## 6. Điều khiển vinh danh
+
+Các nút:
+1. Mở màn hình vinh danh.
+2. Thêm người chiến thắng.
+3. Chọn hình ảnh.
+4. Xem trước.
+5. Xác nhận thông tin.
+6. Trình chiếu.
+7. Giải thưởng tiếp theo.
+8. Giải thưởng trước.
+9. Kết thúc vinh danh.
+10. Xuất danh sách vinh danh ra Excel.
+
+Không tự động công bố khi đang nhập hoặc chỉnh sửa.
+
+Chỉ trình chiếu khi MC nhấn nút xác nhận.
+
+## 7. Xuất kết quả
+
+Cho phép xuất:
+- Danh sách người chiến thắng.
+- Danh sách giải thưởng.
+- Danh sách đội chiến thắng.
+- Danh sách thành viên.
+- Bảng thành tích.
+- Báo cáo tổng kết.
+
+Có thể sử dụng dữ liệu để tạo giấy chứng nhận hoặc danh sách trao thưởng.
+
+---
+
+# XV. THIẾT KẾ CƠ SỞ DỮ LIỆU MICROSOFT ACCESS
+
+Tự động tạo file:
+
+`RungChuongVang.accdb`
+
+Nếu chưa tồn tại.
+
+Thiết kế cơ sở dữ liệu đầy đủ các bảng:
+
+## 1. Bảng LopHoc
+
+- LopHocID.
+- MaLop.
+- TenLop.
+- KhoiLop.
+- TenTruong.
+- TrangThai.
+
+## 2. Bảng MonHoc
+
+- MonHocID.
+- TenMonHoc.
+- MoTa.
+- TrangThai.
+
+## 3. Bảng ChuDe
+
+- ChuDeID.
+- TenChuDe.
+- MoTa.
+
+## 4. Bảng CauHoi
+
+- CauHoiID.
+- MaCauHoi.
+- NoiDung.
+- MonHocID.
+- ChuDeID.
+- MucDo.
+- LoaiCauHoi.
+- GiaiThich.
+- ThoiGianTraLoi.
+- DuongDanHinhAnh.
+- TrangThai.
+
+## 5. Bảng CauHoi_LopHoc
+
+- ID.
+- CauHoiID.
+- LopHocID.
+
+Dùng để cho phép một câu hỏi thuộc nhiều lớp.
+
+## 6. Bảng DapAn
+
+- DapAnID.
+- CauHoiID.
+- NoiDungDapAn.
+- KyHieu.
+- LaDapAnDung.
+- ThuTu.
+
+## 7. Bảng ThiSinh
+
+- ThiSinhID.
+- MaThiSinh.
+- SoBaoDanh.
+- HoTen.
+- LopHocID.
+- TenTruong.
+- DuongDanHinhAnh.
+- GhiChu.
+- TrangThai.
+
+## 8. Bảng DoiThi
+
+- DoiThiID.
+- MaDoi.
+- TenDoi.
+- TenLop.
+- TenTruong.
+- TenDoiTruong.
+- DuongDanHinhAnh.
+- GhiChu.
+
+## 9. Bảng ThanhVienDoi
+
+- ThanhVienDoiID.
+- DoiThiID.
+- ThiSinhID.
+- VaiTro.
+- TrangThai.
+
+## 10. Bảng ChuongTrinh
+
+- ChuongTrinhID.
+- MaChuongTrinh.
+- TenChuongTrinh.
+- NgayToChuc.
+- DonViToChuc.
+- DiaDiem.
+- PhuongThucThi.
+- QuyTacTraLoiDoi.
+- ThoiGianMacDinh.
+- TrangThai.
+- GhiChu.
+
+## 11. Bảng ChuongTrinh_CauHoi
+
+- ID.
+- ChuongTrinhID.
+- CauHoiID.
+- ThuTu.
+- ThoiGianTraLoi.
+- TrangThai.
+
+## 12. Bảng ChuongTrinh_ThiSinh
+
+- ID.
+- ChuongTrinhID.
+- ThiSinhID.
+- DoiThiID.
+- TrangThaiThi.
+- SoCauDung.
+- CauHoiBiLoai.
+- ThoiDiemBiLoai.
+- ThuHang.
+- SoLanCuuTro.
+
+## 13. Bảng KetQua
+
+- KetQuaID.
+- ChuongTrinhID.
+- CauHoiID.
+- ThiSinhID.
+- DoiThiID.
+- DapAnDaChon.
+- KetQuaDungSai.
+- ThoiGianTraLoi.
+- TrangThaiXuLy.
+- Diem.
+- GhiChu.
+
+## 14. Bảng LichSuLoai
+
+- ID.
+- ChuongTrinhID.
+- CauHoiID.
+- ThiSinhID.
+- DoiThiID.
+- LyDoLoai.
+- ThoiGianLoai.
+- NguoiThucHien.
+- GhiChu.
+
+## 15. Bảng LichSuCuuTro
+
+- ID.
+- ChuongTrinhID.
+- ThiSinhID.
+- DoiThiID.
+- LyDoCuuTro.
+- ThoiGianCuuTro.
+- NguoiThucHien.
+
+## 16. Bảng LichSuThaoTac
+
+- ID.
+- ChuongTrinhID.
+- LoaiThaoTac.
+- DoiTuongID.
+- DuLieuCu.
+- DuLieuMoi.
+- ThoiGian.
+- NguoiThucHien.
+
+Dùng để lưu lịch sử và phục vụ hoàn tác.
+
+## 17. Bảng VinhDanh
+
+- VinhDanhID.
+- ChuongTrinhID.
+- ThiSinhID.
+- DoiThiID.
+- HoTen.
+- TenLop.
+- TenTruong.
+- TenDoi.
+- TenGiaiThuong.
+- ThanhTich.
+- SoCauDung.
+- SoCauVuotQua.
+- DuongDanHinhAnh.
+- ThuTuTrinhChieu.
+- NgayVinhDanh.
+- GhiChu.
+
+## 18. Bảng CauHinh
+
+- CauHinhID.
+- TenCauHinh.
+- GiaTri.
+- MoTa.
+
+## 19. Bảng TrangThaiChuongTrinh
+
+- ID.
+- ChuongTrinhID.
+- CauHoiHienTai.
+- TrangThaiTrinhChieu.
+- ThoiGianConLai.
+- TrangThaiDongHo.
+- NgayCapNhat.
+
+Thiết kế đầy đủ:
+- Khóa chính.
+- Khóa ngoại.
+- Chỉ mục.
+- Quan hệ một-nhiều.
+- Quan hệ nhiều-nhiều thông qua bảng trung gian.
+
+Chú ý:
+- Không lưu thông tin đội trực tiếp vào bảng thí sinh theo cách gây trùng lặp dữ liệu.
+- Thi cá nhân thì DoiThiID được để trống.
+- Thi theo đội thì quản lý kết quả ở cấp đội, đồng thời lưu kết quả từng thành viên nếu áp dụng quy tắc tất cả thành viên phải trả lời đúng.
+- Không tạo bản ghi kết quả trùng cho cùng đối tượng và câu hỏi.
+- Phải lưu lịch sử để có thể truy xuất kết quả sau chương trình.
+
+---
+
+# XVI. PHÂN HỆ BÁO CÁO VÀ THỐNG KÊ
+
+Xây dựng chức năng thống kê:
+
+## 1. Báo cáo câu hỏi
+
+- Tổng số câu hỏi.
+- Số câu hỏi theo lớp.
+- Số câu hỏi theo môn học.
+- Số câu hỏi theo mức độ.
+- Số câu hỏi đang sử dụng.
+
+## 2. Báo cáo chương trình
+
+- Tên chương trình.
+- Ngày tổ chức.
+- Số lượng thí sinh.
+- Số lượng đội.
+- Tổng số câu hỏi.
+- Tổng số câu đã sử dụng.
+- Người hoặc đội chiến thắng.
+
+## 3. Báo cáo thí sinh
+
+- Danh sách thí sinh.
+- Số câu trả lời đúng.
+- Câu hỏi bị loại.
+- Thời gian bị loại.
+- Số lần cứu trợ.
+- Thứ hạng.
+
+## 4. Báo cáo đội thi
+
+- Danh sách đội.
+- Số lượng thành viên.
+- Số câu trả lời đúng.
+- Câu hỏi bị loại.
+- Thành tích.
+- Thứ hạng.
+
+## 5. Xuất Excel
+
+Cho phép xuất toàn bộ báo cáo ra Excel.
+
+Có chức năng chọn nơi lưu file.
+
+Định dạng bảng đẹp, có tiêu đề, căn chỉnh cột, màu sắc và định dạng ngày tháng.
+
+---
+
+# XVII. PHÂN HỆ SAO LƯU VÀ PHỤC HỒI
+
+Xây dựng chức năng sao lưu:
+
+- Sao lưu cơ sở dữ liệu Access.
+- Sao lưu thư mục hình ảnh.
+- Sao lưu cấu hình chương trình.
+- Sao lưu danh sách câu hỏi.
+- Sao lưu kết quả thi.
+- Sao lưu thông tin vinh danh.
+
+Cho phép:
+- Sao lưu thủ công.
+- Sao lưu tự động.
+- Chọn thư mục lưu.
+- Phục hồi từ bản sao lưu.
+- Kiểm tra bản sao lưu trước khi phục hồi.
+
+Trước khi phục hồi phải tự động sao lưu dữ liệu hiện tại.
+
+Không được ghi đè dữ liệu khi chưa có xác nhận.
+
+---
+
+# XVIII. CẤU TRÚC THƯ MỤC DỰ ÁN
+
+Hãy tổ chức dự án rõ ràng, không viết toàn bộ code vào một file.
+
+Cấu trúc đề xuất:
+
+RungChuongVang/
+- Program.cs
+- App.config
+- Data/
+  - RungChuongVang.accdb
+  - Images/
+    - Questions/
+    - Winners/
+    - Teams/
+    - Logo/
+  - Backup/
+  - Exports/
+- Forms/
+  - FrmMain.cs
+  - FrmDashboard.cs
+  - FrmQuanLyCauHoi.cs
+  - FrmThemSuaCauHoi.cs
+  - FrmNhapExcel.cs
+  - FrmQuanLyLopHoc.cs
+  - FrmQuanLyMonHoc.cs
+  - FrmQuanLyThiSinh.cs
+  - FrmQuanLyDoiThi.cs
+  - FrmTaoChuongTrinh.cs
+  - FrmChonCauHoi.cs
+  - FrmDieuKhien.cs
+  - FrmTrinhChieu.cs
+  - FrmVinhDanh.cs
+  - FrmKetQua.cs
+  - FrmBaoCao.cs
+  - FrmCaiDat.cs
+- Models/
+  - CauHoi.cs
+  - DapAn.cs
+  - LopHoc.cs
+  - MonHoc.cs
+  - ThiSinh.cs
+  - DoiThi.cs
+  - ChuongTrinh.cs
+  - KetQua.cs
+  - VinhDanh.cs
+- DataAccess/
+  - DatabaseHelper.cs
+  - DatabaseInitializer.cs
+  - CauHoiRepository.cs
+  - ThiSinhRepository.cs
+  - DoiThiRepository.cs
+  - ChuongTrinhRepository.cs
+  - KetQuaRepository.cs
+- Services/
+  - ExcelService.cs
+  - QuestionRandomService.cs
+  - ExamService.cs
+  - ScoreService.cs
+  - TimerService.cs
+  - PresentationService.cs
+  - WinnerService.cs
+  - BackupService.cs
+- Helpers/
+  - ImageHelper.cs
+  - ValidationHelper.cs
+  - FileHelper.cs
+- Resources/
+  - Images/
+  - Sounds/
+  - Icons/
+
+Có thể điều chỉnh cấu trúc nếu cần nhưng phải bảo đảm phân chia rõ ràng giữa giao diện, dữ liệu và nghiệp vụ.
+
+---
+
+# XIX. YÊU CẦU VỀ CHẤT LƯỢNG CODE
+
+Bắt buộc:
+
+1. Code C# rõ ràng.
+2. Có chú thích tiếng Việt.
+3. Tách các Form.
+4. Tách lớp nghiệp vụ.
+5. Tách lớp truy cập dữ liệu.
+6. Không viết code trùng lặp.
+7. Không sử dụng truy vấn SQL nối chuỗi với dữ liệu người dùng.
+8. Xử lý ngoại lệ.
+9. Kiểm tra dữ liệu đầu vào.
+10. Không để ứng dụng bị treo khi nhập Excel.
+11. Có xử lý lỗi khi file Access không tồn tại.
+12. Có xử lý khi file Access đang bị khóa.
+13. Có xử lý khi mất hình ảnh.
+14. Có xử lý khi không tìm thấy màn hình thứ hai.
+15. Có xử lý khi người dùng đóng ứng dụng đột ngột.
+16. Có cơ chế lưu trạng thái chương trình.
+17. Có kiểm tra tính toàn vẹn dữ liệu.
+18. Có xác nhận trước khi xóa.
+19. Có ghi nhật ký thao tác.
+20. Không để lỗi khi mở lại chương trình.
+
+Đối với các thao tác quan trọng như xác nhận loại thí sinh, cứu trợ, khôi phục và kết thúc chương trình, sử dụng giao dịch dữ liệu phù hợp để tránh lưu một phần dữ liệu khi xảy ra lỗi.
+
+Không để các Form tự ý thao tác cơ sở dữ liệu theo nhiều cách khác nhau. Phải sử dụng lớp truy cập dữ liệu thống nhất.
+
+---
+
+# XX. QUY TRÌNH TRIỂN KHAI BẰNG VIBE CODING
+
+Không được tạo toàn bộ ứng dụng một cách vội vàng dẫn đến thiếu chức năng hoặc code không thể chạy.
+
+Hãy thực hiện theo các giai đoạn sau:
+
+## GIAI ĐOẠN 1: PHÂN TÍCH VÀ THIẾT KẾ
+
+- Phân tích toàn bộ yêu cầu.
+- Thiết kế kiến trúc phần mềm.
+- Thiết kế cơ sở dữ liệu Access.
+- Thiết kế các bảng.
+- Thiết kế khóa chính và khóa ngoại.
+- Thiết kế quan hệ dữ liệu.
+- Thiết kế giao diện.
+- Thiết kế luồng hoạt động.
+- Thiết kế cơ chế đồng bộ hai màn hình.
+
+Chưa cần viết code ngay.
+
+## GIAI ĐOẠN 2: XÂY DỰNG NỀN TẢNG
+
+- Tạo dự án C# WinForms.
+- Cấu hình .NET 8.
+- Cài đặt các thư viện cần thiết.
+- Tạo cơ sở dữ liệu Access.
+- Xây dựng lớp kết nối dữ liệu.
+- Xây dựng lớp khởi tạo cơ sở dữ liệu.
+- Xây dựng Form chính.
+- Xây dựng Dashboard.
+
+Kiểm tra khả năng biên dịch và kết nối Access.
+
+## GIAI ĐOẠN 3: XÂY DỰNG PHÂN HỆ QUẢN LÝ
+
+- Quản lý lớp.
+- Quản lý môn học.
+- Quản lý chủ đề.
+- Quản lý câu hỏi.
+- Quản lý đáp án.
+- Quản lý thí sinh.
+- Quản lý đội thi.
+- Nhập Excel.
+- Xuất Excel.
+
+Kiểm tra đầy đủ thao tác thêm, sửa, xóa và tìm kiếm.
+
+## GIAI ĐOẠN 4: XÂY DỰNG PHÂN HỆ TẠO CHƯƠNG TRÌNH
+
+- Tạo chương trình.
+- Chọn phương thức thi.
+- Chọn thí sinh.
+- Chọn đội.
+- Chọn câu hỏi.
+- Trộn câu hỏi.
+- Cấu hình mức độ khó.
+- Cấu hình thời gian.
+- Lưu chương trình.
+
+## GIAI ĐOẠN 5: XÂY DỰNG BỘ MÁY ĐIỀU HÀNH THI
+
+- Hiển thị câu hỏi.
+- Đếm ngược.
+- Xác nhận đáp án.
+- Xác nhận đúng/sai.
+- Loại thí sinh.
+- Loại đội.
+- Cứu trợ.
+- Khôi phục.
+- Hoàn tác.
+- Thống kê số lượng còn lại.
+- Xác định người chiến thắng.
+
+Đây là giai đoạn cần kiểm thử kỹ nhất.
+
+## GIAI ĐOẠN 6: XÂY DỰNG HAI MÀN HÌNH
+
+- Màn hình điều khiển.
+- Màn hình trình chiếu.
+- Tự động phát hiện màn hình.
+- Chọn màn hình.
+- Đồng bộ dữ liệu.
+- Đồng bộ đồng hồ.
+- Hiệu ứng.
+- Âm thanh.
+- Bảng thống kê.
+
+## GIAI ĐOẠN 7: XÂY DỰNG PHÂN HỆ VINH DANH
+
+- Nhập tên người chiến thắng.
+- Nhập tên lớp.
+- Nhập tên trường.
+- Nhập tên đội.
+- Chọn giải thưởng.
+- Chọn hình ảnh.
+- Xem trước.
+- Trình chiếu vinh danh.
+- Lưu thông tin.
+- Xuất danh sách.
+
+## GIAI ĐOẠN 8: KIỂM THỬ VÀ HOÀN THIỆN
+
+Kiểm tra:
+
+- Thêm câu hỏi.
+- Sửa câu hỏi.
+- Xóa câu hỏi.
+- Nhập Excel.
+- Trộn câu hỏi.
+- Lọc câu hỏi theo lớp.
+- Thi cá nhân.
+- Thi theo đội.
+- Câu hỏi một đáp án.
+- Câu hỏi nhiều đáp án.
+- Câu hỏi tự luận.
+- Đếm ngược.
+- Xác nhận kết quả.
+- Loại thí sinh.
+- Loại đội.
+- Cứu trợ.
+- Khôi phục.
+- Hoàn tác.
+- Đồng bộ hai màn hình.
+- Vinh danh.
+- Lưu kết quả.
+- Mở lại chương trình.
+- Sao lưu và phục hồi.
+
+Phải sửa toàn bộ lỗi phát hiện được trước khi hoàn thành.
+
+## GIAI ĐOẠN 9: ĐÓNG GÓI VÀ BÀN GIAO
+
+Tạo:
+- File chạy ứng dụng.
+- File cài đặt nếu có thể.
+- File cơ sở dữ liệu mẫu.
+- File Excel mẫu nhập câu hỏi.
+- File Excel mẫu nhập thí sinh.
+- Hướng dẫn cài đặt.
+- Hướng dẫn sử dụng.
+- Hướng dẫn cấu hình hai màn hình.
+- Hướng dẫn sao lưu dữ liệu.
+
+---
+
+# XXI. NGUYÊN TẮC LÀM VIỆC BẮT BUỘC CỦA AI VIBE CODING
+
+Đây là các yêu cầu quan trọng nhất khi triển khai:
+
+1. Đọc và phân tích toàn bộ prompt trước khi viết code.
+2. Không tự ý bỏ chức năng.
+3. Không thay đổi công nghệ đã yêu cầu.
+4. Không thay Microsoft Access bằng cơ sở dữ liệu khác.
+5. Không thay Windows Forms bằng ứng dụng web.
+6. Không tạo giao diện giả lập không có nghiệp vụ.
+7. Không sử dụng dữ liệu mẫu thay cho chức năng thực tế.
+8. Mỗi chức năng phải có giao diện, xử lý nghiệp vụ và kết nối cơ sở dữ liệu thật.
+9. Sau mỗi giai đoạn phải kiểm tra biên dịch.
+10. Khi phát hiện lỗi phải sửa trên code hiện tại.
+11. Không viết lại toàn bộ dự án nếu chỉ có một chức năng bị lỗi.
+12. Không tạo các lớp hoặc phương thức trùng lặp không cần thiết.
+13. Phải giữ nguyên tính tương thích giữa các Form.
+14. Phải kiểm tra các chức năng đã triển khai trước khi chuyển sang chức năng tiếp theo.
+15. Phải thông báo rõ chức năng nào đã hoàn thành, chức năng nào chưa hoàn thành.
+16. Không tuyên bố hoàn thành khi chưa kiểm thử thực tế.
+17. Không bỏ qua các trường hợp ngoại lệ.
+18. Không làm mất dữ liệu khi sửa hoặc nâng cấp cơ sở dữ liệu.
+19. Khi cần thay đổi cấu trúc bảng Access, phải có cơ chế nâng cấp cơ sở dữ liệu an toàn.
+20. Luôn ưu tiên tính ổn định, chính xác và khả năng sử dụng thực tế.
+
+## XXII. YÊU CẦU ĐẦU TIÊN: BẮT ĐẦU TRIỂN KHAI
+
+Trước tiên, hãy thực hiện GIAI ĐOẠN 1.
+
+Tôi yêu cầu bạn trình bày:
+
+1. Kiến trúc tổng thể phần mềm.
+2. Cấu trúc thư mục.
+3. Thiết kế chi tiết cơ sở dữ liệu Microsoft Access.
+4. Sơ đồ quan hệ giữa các bảng.
+5. Sơ đồ hoạt động của thi cá nhân.
+6. Sơ đồ hoạt động của thi theo đội.
+7. Quy trình xử lý câu hỏi và loại thí sinh.
+8. Cơ chế cứu trợ và hoàn tác.
+9. Cơ chế điều khiển hai màn hình.
+10. Thiết kế màn hình vinh danh.
+11. Danh sách các Form cần xây dựng.
+12. Kế hoạch triển khai từng giai đoạn.
+
+Sau khi trình bày xong, hãy chờ tôi xác nhận trước khi bắt đầu viết code.
+
+**MỤC TIÊU CUỐI CÙNG:**
+
+Xây dựng một phần mềm RUNG CHUÔNG VÀNG hoàn chỉnh bằng C# Windows Forms, có giao diện đẹp như gameshow truyền hình, quản lý câu hỏi chuyên nghiệp, nhập dữ liệu Excel, lưu trữ Microsoft Access, hỗ trợ thi cá nhân và thi theo đội, tự động trộn câu hỏi, điều hành loại thí sinh, cứu trợ, thống kê kết quả, trình chiếu hai màn hình và vinh danh người chiến thắng bằng hình ảnh.
+
+Phần mềm phải có khả năng sử dụng thực tế trong các chương trình Rung Chuông Vàng tại trường học và các sự kiện, hoạt động ngoại khóa.
